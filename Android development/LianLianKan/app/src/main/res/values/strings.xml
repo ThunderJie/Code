@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">LianLianKan</string>
+    <string name="username">用户名:</string>
+    <string name="input_hint">请输入用户名</string>
+    <string name="password">密码:</string>
+    <string name="input_hint_passwd">请输入密码</string>
+    <string name="remember_pwd">记住密码</string>
+    <string name="button_sure">确定</string>
+    <string name="btn_cancel">取消</string>
+    <string name="register">注册</string>
+</resources>
