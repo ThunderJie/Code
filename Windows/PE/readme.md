@@ -43,9 +43,11 @@ typedef struct _IMAGE_DOS_HEADER {      // DOS .EXE header
   } IMAGE_DOS_HEADER, *PIMAGE_DOS_HEADER;
 ```
 DOS部分我们需要熟悉的是e_magic成员和e_lfanew成员，前者是标识PE指纹的一部分，后者则是寻找PE文件头的部分，除了这两个成员，其他成员全部用0填充都不会影响程序正常运行，所以我们不需要过多的对其他部分深究，DOS部分在16进制编辑器中看就是下图的部分：
+
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20190324214552451.png)
 
 我们可以看到e_lfanew指向PE文件头，我们可以通过它来寻找PE文件头，而DOS块的部分自然就是PE文件头和DOS MZ文件头中间的部分，这部分是由链接器所写入的，可以随意进行修改，并不影响程序的运行：
+
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20190324225317481.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0NoYXJsZXNHb2RY,size_16,color_FFFFFF,t_70)
 
 ## PE文件头
@@ -115,10 +117,13 @@ typedef struct _IMAGE_OPTIONAL_HEADER {
 } IMAGE_OPTIONAL_HEADER32, *PIMAGE_OPTIONAL_HEADER32;
 ```
 程序中的扩展PE头大小在标准PE头中的显示如下图
+
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/2019032423224238.png)
 扩展PE头在程序中显示如下，每一个属性可以通过偏移找到
+
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20190324233108607.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0NoYXJsZXNHb2RY,size_16,color_FFFFFF,t_70)
 还需要知道的是，程序的真正入口点 = ImageBase + AddressOfEntryPoint
+
 ## 节表
 节表的结构如下，整体为40个字节
 ```c
@@ -139,6 +144,7 @@ typedef struct _IMAGE_SECTION_HEADER {
 } IMAGE_SECTION_HEADER, *PIMAGE_SECTION_HEADER;
 ```
 程序中显示如下
+
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20190324233724312.png)
 值得注意的是扩展PE头中的 FileAlignment 以及 SizeOfHeaders 这两个成员，SizeOfHeaders 表示所有的头加上节表文件对齐之后的值，对齐的大小参考的就是 FileAlignment 成员，如果所有的头加上节表的大小为320，FileAlignment 为 200，那么 SizeOfHeaders 大小就为 400，因为是根据FileAlignment 对齐的，这种对齐虽然牺牲了空间，但是可以提高程序运行效率，下图中的前面部分0x00100000就是程序在内存中对齐的大小，也就是程序运行起来时对齐的大小，0x00000400是程序在文件中的对齐大小，也就是没有运行时对齐的大小，需要清楚的是，PE程序在运行时内存中的对齐值和没有运行时的对齐值可能是截然不同的，了解这一点这对我们后面写PE解析器有帮助。
 
@@ -152,6 +158,7 @@ typedef struct _IMAGE_DATA_DIRECTORY {
 } IMAGE_DATA_DIRECTORY, *PIMAGE_DATA_DIRECTORY;
 ```
 在程序中查找导出表如下图所示，因为结构体数组中每一个结构体大小为 16 位，又是扩展PE头中的最后一个成员，所以我们从节表段向上推 8 行即为我们的结构体数组开头，前 8 位是导出表的内容，因为是一个exe文件，这里刚好就没有导出表只有导入表，可以看到导入表RVA地址是0x00003700的位置
+
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20190326220931963.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0NoYXJsZXNHb2RY,size_16,color_FFFFFF,t_70)
 
 导入表的结构如下
@@ -178,7 +185,9 @@ typedef IMAGE_IMPORT_DESCRIPTOR UNALIGNED *PIMAGE_IMPORT_DESCRIPTOR;
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/2019032622462216.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0NoYXJsZXNHb2RY,size_16,color_FFFFFF,t_70) 
 
 但是上图只是PE文件加载前的情况，PE文件一旦运行起来，就会变成下图的情况
+
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20190327103034632.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0NoYXJsZXNHb2RY,size_16,color_FFFFFF,t_70)
+
 我们还需要了解的结构体是 IMAGE_THUNK_DATA 和 IMAGE_IMPORT_BY_NAME 结构如下
 
 ```c
@@ -486,14 +495,31 @@ int main(int argc, char* argv[])
 ```
 ## 运行效果
 节表以及之前信息
+
+
+
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20190327170052364.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0NoYXJsZXNHb2RY,size_16,color_FFFFFF,t_70)
 
+
+
 导出表
+
+
+
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20190327170152161.png)
+
+
+
 导入表
+
+
+
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20190327170215712.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0NoYXJsZXNHb2RY,size_16,color_FFFFFF,t_70)
 
+
+
 # 0x03：总结
+
 这个PE解析器虽然简单，但是自己写了之后对PE的理解和之前截然不同，后续可以对这个解析器进行各种优化，判断是否有壳之类的功能可以添加上去。
 ## 参考链接
 https://blog.csdn.net/koalazb/article/details/53590404
