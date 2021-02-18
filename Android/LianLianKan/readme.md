@@ -4,11 +4,16 @@
 https://github.com/ThunderJie/Code/tree/master/Android%20development/LianLianKan
 # 0x01:实现过程
 ## 一.实现开始欢迎界面自动跳转至登陆界面
-1.	实现效果：
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20190123103419674.gif)
+1. 实现效果：
 
-2.	实现原理：
-首先我们创建四个继承自Activity的类Login_Activity.class，login.class，Register_Activity.class，next.class我们在AndroidManifest.xml中将游戏的图标和名字进行基本的一些设置，再将标题框隐藏。
+   
+
+   ![在这里插入图片描述](https://img-blog.csdnimg.cn/20190123103419674.gif)
+
+   
+
+2. 实现原理：
+   首先我们创建四个继承自Activity的类Login_Activity.class，login.class，Register_Activity.class，next.class我们在AndroidManifest.xml中将游戏的图标和名字进行基本的一些设置，再将标题框隐藏。
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
@@ -94,10 +99,15 @@ Tips：Timer和TimerTask的区别
 ## 二.实现登陆界面
 
 1. 实现效果
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20190129111740535.gif)
+
+  
+
+  ![在这里插入图片描述](https://img-blog.csdnimg.cn/20190129111740535.gif)
+
+  
 
 2. 实现原理
-login.java文件使用SharePreferences实现登陆界面，登陆成功后我是跳转到next.class，根据需要修改为自己的游戏界面就可以了，下面是实现内容：
+  login.java文件使用SharePreferences实现登陆界面，登陆成功后我是跳转到next.class，根据需要修改为自己的游戏界面就可以了，下面是实现内容：
 ```java
 package com.from_thunder_j.lianliankan.login;
 
